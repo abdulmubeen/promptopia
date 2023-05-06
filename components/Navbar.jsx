@@ -7,17 +7,17 @@ import { useState, useEffect } from "react";
 import { signIn, signOut, useSession, getProviders } from "next-auth/react";
 
 const Navbar = () => {
-  const isUserLoggedIn = true;
+  const { data: session } = useSession();
 
   const [providers, setProviders] = useState(null);
   const [toggleDropdown, setToggleDropdown] = useState(false);
 
   useEffect(() => {
-    const setProviders = async () => {
+    const setUpProviders = async () => {
       const response = await getProviders();
       setProviders(response);
     };
-    setProviders();
+    setUpProviders();
   }, []);
 
   return (
@@ -34,7 +34,7 @@ const Navbar = () => {
       </Link>
       {/* Desktop Navigation */}
       <div className="sm:flex hidden">
-        {isUserLoggedIn ? (
+        {session?.user ? (
           <div className="flex gap-3 md:gap-5">
             <Link href={"/create-prompt"} className="black_btn">
               Create Post
@@ -46,7 +46,7 @@ const Navbar = () => {
 
             <Link href={"/profile"}>
               <Image
-                src={"/assets/images/logo.svg"}
+                src={session?.user.image}
                 alt="User Profile"
                 width={37}
                 height={37}
@@ -63,17 +63,19 @@ const Navbar = () => {
                   key={provider.name}
                   onClick={() => signIn(provider.id)}
                   className="black_btn"
-                ></button>
+                >
+                  Sign In
+                </button>
               ))}
           </>
         )}
       </div>
       {/* Mobile Navigation */}
       <div className="sm:hidden flex relative">
-        {isUserLoggedIn ? (
+        {session?.user ? (
           <div className="flex">
             <Image
-              src={"/assets/images/logo.svg"}
+              src={session?.user.image}
               alt="User Profile"
               width={37}
               height={37}
@@ -119,7 +121,9 @@ const Navbar = () => {
                   key={provider.name}
                   onClick={() => signIn(provider.id)}
                   className="black_btn"
-                ></button>
+                >
+                  Sign In
+                </button>
               ))}
           </>
         )}
