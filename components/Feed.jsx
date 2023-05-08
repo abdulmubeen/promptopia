@@ -23,15 +23,27 @@ const Feed = () => {
 
   const handleSearchChange = (e) => {
     e.preventDefault();
+    setSearchText(e.target.value);
   };
   useEffect(() => {
     const fetchPosts = async () => {
       const response = await fetch("/api/prompt");
       const data = await response.json();
-      setPosts(data);
+      if (posts.length === 0) setPosts(data);
+      else {
+        if (searchText === "") setPosts(data);
+        else {
+          const filteredPosts = data.filter((post) => {
+            post.prompt.includes(searchText);
+            post.creator.username.includes(searchText);
+            post.tag.includes(`#${searchText}`);
+          });
+          setPosts(filteredPosts);
+        }
+      }
     };
     fetchPosts();
-  }, []);
+  }, [searchText]);
   return (
     <section className="feed">
       <form className="relative w-full flex-center">
