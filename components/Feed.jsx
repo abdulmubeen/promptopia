@@ -24,11 +24,12 @@ const Feed = () => {
   const [posts, setPosts] = useState([]);
 
   const filterPrompts = (text) => {
-    return posts.filter(
-      (post) =>
-        post.prompt.includes(text) ||
-        post.creator.username.includes(text) ||
-        post.tag.includes(`#${text}`)
+    const regex = new RegExp(text, "i"); // 'i' flag for case-insensitive search
+    return allPosts.filter(
+      (item) =>
+        regex.test(item.creator.username) ||
+        regex.test(item.tag) ||
+        regex.test(item.prompt)
     );
   };
 
@@ -46,7 +47,7 @@ const Feed = () => {
   };
   const handleTagClick = (tagName) => {
     setSearchText(tagName);
-    const filteredPosts = filterPrompts(searchText);
+    const filteredPosts = filterPrompts(tagName);
     setPosts(filteredPosts);
   };
   useEffect(() => {
